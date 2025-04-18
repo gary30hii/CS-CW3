@@ -1,0 +1,17 @@
+{
+    "gary30": {
+        "salt": "742006056b6de4bfac8d1a28e1f3b25d",
+        "hash": "b890eb3503ddebb7d1f4398008247c325d3e5f9400f4c7515278f750f525db21",
+        "login_attempts": 0
+    },
+    "ishowspeed": {
+        "salt": "6fbfca7a3b38bc8d1d64cb5106f6fdd4",
+        "hash": "bd9b9cd17216fc5c93a532463841a537d7d94c5a32400685d699fc99aab74d0d",
+        "login_attempts": 0
+    },
+    "gary": {
+        "salt": "a5b43981c6de5ae893106fa663af2670",
+        "hash": "bdee5093de63a2c00efd7c59060059c26b0493515205a53513c2d738d3f6ffce",
+        "login_attempts": 1
+    }
+}
