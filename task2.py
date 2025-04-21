@@ -4,7 +4,7 @@ import getpass
 import random
 import os
 
-USER_DATA_FILE = "users.json"
+USER_DATA_FILE = "users.json"  # New file to keep SHA-1 version separate
 
 
 def load_users():
@@ -20,7 +20,7 @@ def save_users(users):
 
 
 def hash_password(password, salt):
-    return hashlib.sha256(salt + password.encode()).hexdigest()
+    return hashlib.sha1(password.encode() + salt).hexdigest()
 
 
 def generate_otp():
@@ -46,7 +46,6 @@ def mfa_login():
             print("Account locked due to too many failed attempts.")
             continue
 
-        # password = getpass.getpass("Enter your password: ")
         password = input("Enter your password: ")
 
         salt = bytes.fromhex(user["salt"])

@@ -25,9 +25,9 @@ def generate_salt():
     return os.urandom(16)
 
 
-# Hash password with salt using SHA-256
+# Hash password with salt using SHA-1
 def hash_password(password, salt):
-    return hashlib.sha256(salt + password.encode()).hexdigest()
+    return hashlib.sha1(password.encode() + salt).hexdigest()
 
 
 # Register a new user
@@ -75,8 +75,7 @@ def login_user(users):
         print("Account locked due to too many failed login attempts.")
         return
 
-    # password = getpass.getpass("Password: ")
-    password = input("Password: ")
+    password = getpass.getpass("Password: ")
     salt = bytes.fromhex(user["salt"])
     hashed_input = hash_password(password, salt)
 
