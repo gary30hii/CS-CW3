@@ -3,11 +3,9 @@ import os
 import json
 import getpass
 
-# File to store user data
 USER_DATA_FILE = "users.json"
 
 
-# Load or initialize user database
 def load_users():
     if os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, "r") as file:
@@ -20,17 +18,18 @@ def save_users(users):
         json.dump(users, file)
 
 
-# Generate random salt
 def generate_salt():
     return os.urandom(16)
 
 
-# Hash password with salt using SHA-1
-def hash_password(password, salt):
-    return hashlib.sha1(password.encode() + salt).hexdigest()
+# Updated hash function to handle salted or unsalted
+def hash_password(password, salt=None):
+    if salt:
+        return hashlib.sha1(password.encode() + salt).hexdigest()
+    else:
+        return hashlib.sha1(password.encode()).hexdigest()
 
 
-# Register a new user
 def register_user(users):
     username = input("Enter new username: ").strip()
     if username in users:
@@ -44,15 +43,31 @@ def register_user(users):
         )
         return
 
-    salt = generate_salt()
-    hashed = hash_password(password, salt)
+    # Choose salted or unsalted
+    use_salt = input("Use salted hashing? (y/n): ").strip().lower() == "y"
 
-    users[username] = {"salt": salt.hex(), "hash": hashed, "login_attempts": 0}
+    if use_salt:
+        salt = generate_salt()
+        hashed = hash_password(password, salt)
+        users[username] = {
+            "salted": True,
+            "salt": salt.hex(),
+            "hash": hashed,
+            "login_attempts": 0,
+        }
+    else:
+        hashed = hash_password(password)
+        users[username] = {
+            "salted": False,
+            "salt": "",
+            "hash": hashed,
+            "login_attempts": 0,
+        }
+
     save_users(users)
     print("Registration successful!")
 
 
-# Check password complexity
 def check_password_complexity(pw):
     return (
         len(pw) >= 8
@@ -63,7 +78,6 @@ def check_password_complexity(pw):
     )
 
 
-# Login user
 def login_user(users):
     username = input("Username: ").strip()
     if username not in users:
@@ -76,8 +90,12 @@ def login_user(users):
         return
 
     password = getpass.getpass("Password: ")
-    salt = bytes.fromhex(user["salt"])
-    hashed_input = hash_password(password, salt)
+
+    if user["salted"]:
+        salt = bytes.fromhex(user["salt"])
+        hashed_input = hash_password(password, salt)
+    else:
+        hashed_input = hash_password(password)
 
     if hashed_input == user["hash"]:
         print("Login successful!")
@@ -89,7 +107,6 @@ def login_user(users):
     save_users(users)
 
 
-# Main menu
 def main():
     users = load_users()
     while True:

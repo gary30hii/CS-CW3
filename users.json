@@ -1,1 +1,15 @@
-{"ishowspeed": {"salt": "8f2f2a9256edb5c38679f37f887808d1", "hash": "28342a6f05d29d3e1fc54ec8a59efd7a1af9228a", "login_attempts": 0}}
+{
+    "ishowspeed": {
+        "salted": true,
+        "salt": "7e68dc897a9a95460feffec51cdbcf70",
+        "hash": "97c121940aa8bc7823cd22f9f617cbfd29e89736",
+        "login_attempts": 0,
+        "email": "user@example.com"
+    },
+    "antman": {
+        "salted": false,
+        "salt": "",
+        "hash": "2b37fc181f1618a3ccdbfb084403a77b14436985",
+        "login_attempts": 0
+    }
+}

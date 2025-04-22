@@ -4,7 +4,7 @@ import getpass
 import random
 import os
 
-USER_DATA_FILE = "users.json"  # New file to keep SHA-1 version separate
+USER_DATA_FILE = "users.json"
 
 
 def load_users():
@@ -19,8 +19,12 @@ def save_users(users):
         json.dump(users, f)
 
 
-def hash_password(password, salt):
-    return hashlib.sha1(password.encode() + salt).hexdigest()
+# Modified hash function
+def hash_password(password, salt=None):
+    if salt:
+        return hashlib.sha1(password.encode() + salt).hexdigest()
+    else:
+        return hashlib.sha1(password.encode()).hexdigest()
 
 
 def generate_otp():
@@ -48,8 +52,11 @@ def mfa_login():
 
         password = input("Enter your password: ")
 
-        salt = bytes.fromhex(user["salt"])
-        hashed_input = hash_password(password, salt)
+        if user["salted"]:
+            salt = bytes.fromhex(user["salt"])
+            hashed_input = hash_password(password, salt)
+        else:
+            hashed_input = hash_password(password)
 
         if hashed_input == user["hash"]:
             print("Password correct.")
@@ -74,6 +81,50 @@ def mfa_login():
         save_users(users)
 
 
+# Optional: Simple register function for testing
+def register_user():
+    users = load_users()
+    username = input("Set username: ").strip()
+    if username in users:
+        print("Username already exists.")
+        return
+
+    password = getpass.getpass("Set password: ")
+
+    use_salt = input("Use salted hashing? (y/n): ").strip().lower() == "y"
+
+    if use_salt:
+        salt = os.urandom(16)
+        hashed = hash_password(password, salt)
+        users[username] = {
+            "salted": True,
+            "salt": salt.hex(),
+            "hash": hashed,
+            "login_attempts": 0,
+            "email": "user@example.com",
+        }
+    else:
+        hashed = hash_password(password)
+        users[username] = {
+            "salted": False,
+            "salt": "",
+            "hash": hashed,
+            "login_attempts": 0,
+            "email": "user@example.com",
+        }
+
+    save_users(users)
+    print("User registered successfully!")
+
+
 if __name__ == "__main__":
-    print("Multi-Factor Authentication Login")
-    mfa_login()
+    print("1. Register User")
+    print("2. Login with MFA")
+    choice = input("Choose option: ").strip()
+
+    if choice == "1":
+        register_user()
+    elif choice == "2":
+        mfa_login()
+    else:
+        print("Invalid option.")
