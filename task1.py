@@ -37,11 +37,6 @@ def register_user(users):
         return
 
     password = getpass.getpass("Set a password: ")
-    if not check_password_complexity(password):
-        print(
-            "Password too weak. Must be at least 8 characters with upper, lower, digit and symbol."
-        )
-        return
 
     # Choose salted or unsalted
     use_salt = input("Use salted hashing? (y/n): ").strip().lower() == "y"
@@ -66,16 +61,6 @@ def register_user(users):
 
     save_users(users)
     print("Registration successful!")
-
-
-def check_password_complexity(pw):
-    return (
-        len(pw) >= 8
-        and any(c.islower() for c in pw)
-        and any(c.isupper() for c in pw)
-        and any(c.isdigit() for c in pw)
-        and any(not c.isalnum() for c in pw)
-    )
 
 
 def login_user(users):
